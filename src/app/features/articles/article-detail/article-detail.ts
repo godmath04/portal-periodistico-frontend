@@ -1,11 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ArticleService } from '../../../core/services/article.service';
+import { Article } from '../../../core/models/article.model';
 
 @Component({
   selector: 'app-article-detail',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './article-detail.html',
   styleUrl: './article-detail.scss',
 })
-export class ArticleDetail {
+export class ArticleDetail implements OnInit {
+  article: Article | null = null;
+  loading: boolean = false;
+  errorMessage: string = '';
 
+  statusMap: { [key: number]: { name: string; class: string } } = {
+    1: { name: 'Borrador', class: 'status-draft' },
+    2: { name: 'Publicado', class: 'status-published' },
+    3: { name: 'En Revisión', class: 'status-review' },
+    4: { name: 'Observado', class: 'status-flagged' },
+  };
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private articleService: ArticleService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    const articleId = this.route.snapshot.paramMap.get('id');
+    if (articleId) {
+      this.loadArticle(+articleId);
+    } else {
+      this.errorMessage = 'ID de artículo no válido';
+    }
+  }
+
+  loadArticle(articleId: number): void {
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.articleService.getArticleById(articleId).subscribe({
+      next: (article) => {
+        this.article = article;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error cargando artículo:', error);
+        this.errorMessage = error.error?.error || 'Error al cargar el artículo';
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  getStatusInfo(statusId: number) {
+    return this.statusMap[statusId] || { name: 'Desconocido', class: '' };
+  }
+
+  goBack(): void {
+    this.router.navigate(['/articles']);
+  }
 }

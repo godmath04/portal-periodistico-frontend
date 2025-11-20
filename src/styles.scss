@@ -53,6 +53,16 @@ body {
       box-shadow: $shadow-md;
     }
   }
+
+  &-success {
+    background-color: $success;
+    color: white;
+    
+    &:hover {
+      opacity: 0.9;
+      box-shadow: $shadow-md;
+    }
+  }
 }
 
 // Utilidades para cards

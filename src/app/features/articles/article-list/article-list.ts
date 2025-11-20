@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ArticleService } from '../../../core/services/article.service';
@@ -27,7 +27,8 @@ export class ArticleList implements OnInit {
   constructor(
     private articleService: ArticleService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +42,7 @@ export class ArticleList implements OnInit {
     if (!userId) {
       this.errorMessage = 'No se pudo obtener el usuario autenticado';
       this.loading = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -48,11 +50,13 @@ export class ArticleList implements OnInit {
       next: (articles) => {
         this.articles = articles;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error cargando artículos:', error);
         this.errorMessage = 'Error al cargar los artículos';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -62,7 +66,7 @@ export class ArticleList implements OnInit {
   }
 
   viewArticle(articleId: number): void {
-    console.log('Ver artículo:', articleId);
+    this.router.navigate(['/articles/detail', articleId]);
   }
 
   editArticle(articleId: number): void {
@@ -84,6 +88,7 @@ export class ArticleList implements OnInit {
           console.error('Error al eliminar artículo:', error);
           this.errorMessage = error.error || 'Error al eliminar el artículo';
           this.loading = false;
+          this.cdr.detectChanges();
         },
       });
     }
@@ -94,8 +99,23 @@ export class ArticleList implements OnInit {
   }
 
   submitForReview(articleId: number): void {
-    alert('Funcionalidad "Enviar a Revisión" pendiente de implementar');
-    // TODO: Implementar cuando tengamos el endpoint
+    if (confirm('¿Estás seguro de enviar este artículo a revisión?')) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.articleService.sendArticleToReview(articleId).subscribe({
+        next: (updatedArticle) => {
+          console.log('Artículo enviado a revisión:', updatedArticle);
+          this.loadMyArticles(); // Recargar la lista para ver el cambio de estado
+        },
+        error: (error) => {
+          console.error('Error al enviar a revisión:', error);
+          this.errorMessage = error.error || 'Error al enviar el artículo a revisión';
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    }
   }
 
   logout(): void {

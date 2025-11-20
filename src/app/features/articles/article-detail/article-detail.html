@@ -1,1 +1,67 @@
-<p>article-detail works!</p>
+<div class="page-container">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>Portal Periodístico</h1>
+    <button class="btn btn-secondary" (click)="goBack()">← Volver a Mis Artículos</button>
+  </nav>
+
+  <div class="main-content">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">Dashboard</a>
+        <a routerLink="/articles" routerLinkActive="active" class="nav-item">Mis Artículos</a>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="article-detail-container">
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading">
+        <p>Cargando artículo...</p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="errorMessage" class="error-message">
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn-primary" (click)="goBack()">Volver</button>
+      </div>
+
+      <!-- Artículo -->
+      <div *ngIf="!loading && !errorMessage && article" class="article-content card">
+        <!-- Header del artículo -->
+        <div class="article-header">
+          <h1>{{ article.title }}</h1>
+          <span
+            class="status-badge"
+            [ngClass]="getStatusInfo(article.status.idArticleStatus).class"
+          >
+            {{ getStatusInfo(article.status.idArticleStatus).name }}
+          </span>
+        </div>
+
+        <!-- Metadata -->
+        <div class="article-metadata">
+          <p><strong>Creado:</strong> {{ article.createdAt | date : 'dd/MM/yyyy HH:mm' }}</p>
+          <p *ngIf="article.updatedAt">
+            <strong>Última modificación:</strong>
+            {{ article.updatedAt | date : 'dd/MM/yyyy HH:mm' }}
+          </p>
+          <p><strong>Autor ID:</strong> {{ article.author.idUser }}</p>
+        </div>
+
+        <hr />
+
+        <!-- Contenido del artículo -->
+        <div class="article-body">
+          <p>{{ article.content }}</p>
+        </div>
+
+        <!-- Acciones -->
+        <div class="article-actions">
+          <button class="btn btn-secondary" (click)="goBack()">← Volver</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -51,4 +51,21 @@ export class ArticleService {
   deleteArticle(articleId: number): Observable<string> {
     return this.http.delete(`${this.apiUrl}/${articleId}`, { responseType: 'text' });
   }
+
+  /**
+   * Obtiene un artículo por su ID
+   * Requiere autenticación (token JWT)
+   */
+  getArticleById(articleId: number): Observable<Article> {
+    return this.http.get<Article>(`${this.apiUrl}/${articleId}`);
+  }
+
+  /**
+   * Envía un artículo a revisión
+   * Cambia el estado de Borrador → En Revisión
+   * Requiere autenticación (token JWT)
+   */
+  sendArticleToReview(articleId: number): Observable<Article> {
+    return this.http.put<Article>(`${this.apiUrl}/${articleId}/send-to-review`, {});
+  }
 }
