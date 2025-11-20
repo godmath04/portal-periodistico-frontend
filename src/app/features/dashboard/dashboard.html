@@ -1,0 +1,29 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <h1>Portal Periodístico</h1>
+    <button class="btn btn-danger" (click)="onLogout()">Cerrar Sesión</button>
+  </nav>
+
+  <div class="main-content">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+          Dashboard
+        </a>
+        <a routerLink="/articles" routerLinkActive="active" class="nav-item">
+          Mis Artículos
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="content">
+      <div class="welcome-card card">
+        <h2>¡Bienvenido al Dashboard!</h2>
+        <p>Has iniciado sesión correctamente.</p>
+        <p class="text-muted">Usa el menú lateral para navegar por el portal periodístico.</p>
+      </div>
+    </div>
+  </div>
+</div>

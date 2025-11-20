@@ -1,0 +1,83 @@
+@import '../../../../styles/variables';
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, $primary-dark 0%, $primary-blue 100%);
+}
+
+.login-card {
+  background: white;
+  padding: $spacing-xl;
+  border-radius: $border-radius;
+  box-shadow: $shadow-lg;
+  width: 100%;
+  max-width: 400px;
+
+  h1 {
+    color: $primary-dark;
+    font-size: 28px;
+    margin-bottom: $spacing-xs;
+    text-align: center;
+  }
+
+  h2 {
+    color: $primary-blue;
+    font-size: 20px;
+    margin-bottom: $spacing-lg;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+      color: $neutral-dark;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input {
+      padding: $spacing-sm;
+      border: 1px solid #ddd;
+      border-radius: $border-radius-sm;
+      font-size: 14px;
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+        box-shadow: 0 0 0 3px rgba(41, 167, 217, 0.1);
+      }
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+  }
+
+  .error-message {
+    background-color: rgba($danger, 0.1);
+    color: $danger;
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .btn-block {
+    width: 100%;
+    margin-top: $spacing-sm;
+  }
+}

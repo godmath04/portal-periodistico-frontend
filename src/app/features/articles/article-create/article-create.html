@@ -1,0 +1,46 @@
+<div class="page-container">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>Portal Periodístico</h1>
+    <button class="btn btn-danger" (click)="logout()">Cerrar Sesión</button>
+  </nav>
+
+  <div class="main-content">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+          Dashboard
+        </a>
+        <a routerLink="/articles" routerLinkActive="active" class="nav-item">
+          Mis Artículos
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="article-create-container">
+      <div class="page-header">
+        <h1>Crear Nuevo Artículo</h1>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" class="article-form card">
+        <!-- Título -->
+        <div class="form-group">
+          <label for="title">Título del Artículo *</label>
+          <input 
+            type="text" 
+            id="title" 
+            formControlName="title"
+            class="form-control"
+            placeholder="Ingresa el título del artículo"
+            [class.error]="title?.invalid && title?.touched">
+          
+          <div *ngIf="title?.invalid && title?.touched" class="error-text">
+            <span *ngIf="title?.errors?.['required']">El título es obligatorio</span>
