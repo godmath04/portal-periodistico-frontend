@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // *** AGREGAR RouterLink, RouterLinkActive ***
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ArticleService } from '../../../core/services/article.service';
-import { AuthService } from '../../../core/services/auth.service'; // *** AGREGAR ***
+import { AuthService } from '../../../core/services/auth.service';
 import { Article } from '../../../core/models/article.model';
 
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive], // *** AGREGAR RouterLink, RouterLinkActive ***
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './article-list.html',
   styleUrl: './article-list.scss',
 })
@@ -26,7 +26,7 @@ export class ArticleList implements OnInit {
 
   constructor(
     private articleService: ArticleService,
-    private authService: AuthService, // *** AGREGAR ***
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -37,8 +37,14 @@ export class ArticleList implements OnInit {
   loadMyArticles(): void {
     this.loading = true;
     this.errorMessage = '';
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      this.errorMessage = 'No se pudo obtener el usuario autenticado';
+      this.loading = false;
+      return;
+    }
 
-    this.articleService.getMyArticles().subscribe({
+    this.articleService.getArticlesByAuthor(userId).subscribe({
       next: (articles) => {
         this.articles = articles;
         this.loading = false;
@@ -61,10 +67,35 @@ export class ArticleList implements OnInit {
 
   editArticle(articleId: number): void {
     console.log('Editar artículo:', articleId);
+    this.router.navigate(['/articles/edit', articleId]);
+  }
+
+  deleteArticle(articleId: number): void {
+    if (confirm('¿Estás seguro de eliminar este artículo? Esta acción no se puede deshacer.')) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.articleService.deleteArticle(articleId).subscribe({
+        next: () => {
+          console.log('Artículo eliminado exitosamente');
+          this.loadMyArticles(); // Recargar la lista
+        },
+        error: (error) => {
+          console.error('Error al eliminar artículo:', error);
+          this.errorMessage = error.error || 'Error al eliminar el artículo';
+          this.loading = false;
+        },
+      });
+    }
   }
 
   createArticle(): void {
     this.router.navigate(['/articles/create']);
+  }
+
+  submitForReview(articleId: number): void {
+    alert('Funcionalidad "Enviar a Revisión" pendiente de implementar');
+    // TODO: Implementar cuando tengamos el endpoint
   }
 
   logout(): void {

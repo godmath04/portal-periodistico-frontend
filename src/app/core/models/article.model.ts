@@ -20,3 +20,8 @@ export interface CreateArticleRequest {
   title: string;
   content: string;
 }
+
+export interface UpdateArticleRequest {
+  title: string;
+  content: string;
+}

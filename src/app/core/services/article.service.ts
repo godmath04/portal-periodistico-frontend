@@ -1,55 +1,54 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Article, CreateArticleRequest } from '../models/article.model';
+import { Article, CreateArticleRequest, UpdateArticleRequest } from '../models/article.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArticleService {
-  private apiUrl = 'http://localhost:8082/api/v1/articles'; // URL del article-service
+  private apiUrl = 'http://localhost:8082/api/v1/articles';
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Obtiene todos los artículos
+   * Obtiene todos los artículos PUBLICADOS (público)
    */
-  getAllArticles(): Observable<Article[]> {
+  getAllPublishedArticles(): Observable<Article[]> {
     return this.http.get<Article[]>(this.apiUrl);
   }
 
   /**
-   * Obtiene un artículo por ID
+   * Obtiene los artículos de un autor específico
+   * Usar esto para "mis artículos" pasando el userId del reportero
    */
-  getArticleById(id: number): Observable<Article> {
-    return this.http.get<Article>(`${this.apiUrl}/${id}`);
+  getArticlesByAuthor(authorId: number): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/author/${authorId}`);
   }
 
   /**
-   * Obtiene los artículos del usuario autenticado
-   */
-  getMyArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>(`${this.apiUrl}/my-articles`);
-  }
-
-  /**
-   * Crea un nuevo artículo
+   * Crea un nuevo artículo (Borrador)
+   * Requiere autenticación (token JWT)
    */
   createArticle(article: CreateArticleRequest): Observable<Article> {
     return this.http.post<Article>(this.apiUrl, article);
   }
 
   /**
-   * Envía un artículo a revisión
+   * Actualiza un artículo existente
+   * Solo Borrador u Observado
+   * Requiere autenticación (token JWT)
    */
-  submitForReview(articleId: number): Observable<Article> {
-    return this.http.put<Article>(`${this.apiUrl}/${articleId}/submit`, {});
+  updateArticle(articleId: number, article: UpdateArticleRequest): Observable<Article> {
+    return this.http.put<Article>(`${this.apiUrl}/${articleId}`, article);
   }
 
   /**
    * Elimina un artículo
+   * Solo Borrador u Observado
+   * Requiere autenticación (token JWT)
    */
-  deleteArticle(articleId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${articleId}`);
+  deleteArticle(articleId: number): Observable<string> {
+    return this.http.delete(`${this.apiUrl}/${articleId}`, { responseType: 'text' });
   }
 }

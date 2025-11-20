@@ -7,10 +7,9 @@ import { LoginRequest, LoginResponse } from '../models/user.model';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8081/auth'; // URL del backend
+  private apiUrl = 'http://localhost:8081/auth';
   private tokenKey = 'auth_token';
 
-  // BehaviorSubject para manejar el estado de autenticación
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
@@ -22,7 +21,6 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
-        // Guardar el token en localStorage
         this.setToken(response.token);
         this.isAuthenticatedSubject.next(true);
       })
@@ -63,5 +61,51 @@ export class AuthService {
    */
   isLoggedIn(): boolean {
     return this.hasToken();
+  }
+
+  /**
+   * Decodifica el JWT y extrae el payload
+   */
+  private decodeToken(token: string): any {
+    try {
+      const payload = token.split('.')[1];
+      return JSON.parse(atob(payload));
+    } catch (error) {
+      console.error('Error decodificando token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Obtiene el userId del token JWT
+   */
+  getUserId(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const decoded = this.decodeToken(token);
+    return decoded?.userId || null;
+  }
+
+  /**
+   * Obtiene el username del token JWT
+   */
+  getUsername(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const decoded = this.decodeToken(token);
+    return decoded?.sub || null;
+  }
+
+  /**
+   * Obtiene los roles del token JWT
+   */
+  getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+
+    const decoded = this.decodeToken(token);
+    return decoded?.roles || [];
   }
 }

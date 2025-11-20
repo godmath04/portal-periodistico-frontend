@@ -3,6 +3,7 @@ import { Login } from './features/auth/login/login';
 import { Dashboard } from './features/dashboard/dashboard';
 import { ArticleList } from './features/articles/article-list/article-list';
 import { ArticleCreate } from './features/articles/article-create/article-create';
+import { ArticleEdit } from './features/articles/article-edit/article-edit';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -28,6 +29,11 @@ export const routes: Routes = [
   {
     path: 'articles/create',
     component: ArticleCreate,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'articles/edit/:id',
+    component: ArticleEdit,
     canActivate: [authGuard],
   },
   {
