@@ -68,4 +68,12 @@ export class ArticleService {
   sendArticleToReview(articleId: number): Observable<Article> {
     return this.http.put<Article>(`${this.apiUrl}/${articleId}/send-to-review`, {});
   }
+
+  /**
+   * Obtiene los artículos pendientes de aprobación (estado "En revisión")
+   * Requiere autenticación (token JWT)
+   */
+  getPendingArticles(): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/pending`);
+  }
 }

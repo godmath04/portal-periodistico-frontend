@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Article } from '../models/article.model';
-import { ApprovalRequest, ArticleApproval } from '../models/approval.model';
+import { ApprovalRequest, ApprovalResponse } from '../models/approval.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApprovalService {
-  private apiUrl = 'http://localhost:8082/approvals'; // URL del article-service
+  private apiUrl = 'http://localhost:8082/api/v1/approvals';
 
   constructor(private http: HttpClient) {}
 
@@ -22,14 +22,18 @@ export class ApprovalService {
   /**
    * Aprueba o rechaza un artículo
    */
-  processApproval(articleId: number, request: ApprovalRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${articleId}`, request);
+  processApproval(articleId: number, request: ApprovalRequest): Observable<ApprovalResponse> {
+    return this.http.post<ApprovalResponse>(this.apiUrl, {
+      articleId: articleId,
+      status: request.status,
+      comments: request.comments,
+    });
   }
 
   /**
    * Obtiene el historial de aprobaciones de un artículo
    */
-  getApprovalHistory(articleId: number): Observable<ArticleApproval[]> {
-    return this.http.get<ArticleApproval[]>(`${this.apiUrl}/${articleId}/history`);
+  getApprovalHistory(articleId: number): Observable<ApprovalResponse[]> {
+    return this.http.get<ApprovalResponse[]>(`${this.apiUrl}/article/${articleId}`);
   }
 }

@@ -1,6 +1,6 @@
 @import '../../../styles/variables';
 
-.dashboard-container {
+.page-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@
 .sidebar {
   width: 250px;
   background-color: white;
-  border-right: 1px solid #E0E0E0;
+  border-right: 1px solid #e0e0e0;
   padding: $spacing-lg $spacing-md;
 
   .sidebar-nav {
@@ -59,30 +59,235 @@
   }
 }
 
-.content {
+.dashboard-container {
   flex: 1;
   padding: $spacing-lg;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
   background-color: $neutral-light;
 }
 
-.welcome-card {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
+.page-header {
+  margin-bottom: $spacing-lg;
 
-  h2 {
+  h1 {
     color: $primary-dark;
-    margin-bottom: $spacing-md;
+    margin: 0;
+  }
+}
+
+.loading,
+.no-articles {
+  text-align: center;
+  padding: $spacing-xl;
+  color: #666;
+  font-size: 18px;
+}
+
+.success-message {
+  background-color: rgba($success, 0.1);
+  color: darken($success, 15%);
+  padding: $spacing-md;
+  border-radius: $border-radius;
+  margin-bottom: $spacing-md;
+  border-left: 4px solid $success;
+}
+
+.error-message {
+  background-color: rgba($danger, 0.1);
+  color: $danger;
+  padding: $spacing-md;
+  border-radius: $border-radius;
+  margin-bottom: $spacing-md;
+  border-left: 4px solid $danger;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: $spacing-md;
+}
+
+.article-card {
+  padding: $spacing-md;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
   }
 
-  p {
-    font-size: 16px;
-    color: $neutral-dark;
-    margin-bottom: $spacing-sm;
+  .article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: $spacing-md;
+    gap: $spacing-sm;
 
-    &.text-muted {
-      color: #666;
-      font-style: italic;
+    h3 {
+      color: $primary-dark;
+      margin: 0;
+      font-size: 18px;
+      flex: 1;
+      word-break: break-word;
     }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+
+      &.status-review {
+        background-color: rgba($primary-cyan, 0.2);
+        color: $primary-blue;
+      }
+    }
+  }
+
+  .article-info {
+    margin-bottom: $spacing-md;
+
+    p {
+      margin: $spacing-xs 0;
+      font-size: 14px;
+      color: #666;
+
+      strong {
+        color: $neutral-dark;
+      }
+    }
+  }
+
+  .article-content-preview {
+    margin-bottom: $spacing-md;
+    padding: $spacing-sm;
+    background-color: $neutral-light;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .article-actions {
+    display: flex;
+    gap: $spacing-sm;
+    padding-top: $spacing-sm;
+    border-top: 1px solid #e0e0e0;
+    flex-wrap: wrap;
+  }
+}
+
+// *** MODAL ***
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: $border-radius;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: $shadow-lg;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid #e0e0e0;
+
+  h2 {
+    margin: 0;
+    color: $primary-dark;
+    font-size: 1.5rem;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: rgba($danger, 0.1);
+      color: $danger;
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-lg;
+
+  .modal-article-title {
+    margin-bottom: $spacing-md;
+    font-size: 1.1rem;
+
+    strong {
+      color: $primary-dark;
+    }
+  }
+
+  .form-group {
+    margin-bottom: $spacing-md;
+
+    label {
+      display: block;
+      margin-bottom: $spacing-xs;
+      font-weight: 600;
+      color: $neutral-dark;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: $spacing-sm;
+      border: 1px solid #ddd;
+      border-radius: $border-radius-sm;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+        box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid #e0e0e0;
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }

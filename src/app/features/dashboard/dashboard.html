@@ -1,29 +1,121 @@
-<div class="dashboard-container">
+<div class="page-container">
+  <!-- Navbar -->
   <nav class="navbar">
     <h1>Portal Periodístico</h1>
-    <button class="btn btn-danger" (click)="onLogout()">Cerrar Sesión</button>
+    <button class="btn btn-danger" (click)="logout()">Cerrar Sesión</button>
   </nav>
 
   <div class="main-content">
     <!-- Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <nav class="sidebar-nav">
-        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
-          Dashboard
-        </a>
-        <a routerLink="/articles" routerLinkActive="active" class="nav-item">
-          Mis Artículos
-        </a>
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">Dashboard</a>
+        <a routerLink="/articles" routerLinkActive="active" class="nav-item">Mis Artículos</a>
       </nav>
     </aside>
 
-    <!-- Content Area -->
-    <div class="content">
-      <div class="welcome-card card">
-        <h2>¡Bienvenido al Dashboard!</h2>
-        <p>Has iniciado sesión correctamente.</p>
-        <p class="text-muted">Usa el menú lateral para navegar por el portal periodístico.</p>
+    <!-- Content -->
+    <div class="dashboard-container">
+      <!-- Header -->
+      <div class="page-header">
+        <h1>Artículos Pendientes de Revisión</h1>
       </div>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading && pendingArticles.length === 0" class="loading">
+        <p>Cargando artículos pendientes...</p>
+      </div>
+
+      <!-- Sin artículos pendientes -->
+      <div *ngIf="!loading && pendingArticles.length === 0 && !errorMessage" class="no-articles">
+        <p>No hay artículos pendientes de revisión en este momento.</p>
+      </div>
+
+      <!-- Lista de artículos pendientes -->
+      <div *ngIf="!loading && pendingArticles.length > 0" class="articles-grid">
+        <div *ngFor="let article of pendingArticles" class="article-card card">
+          <div class="article-header">
+            <h3>{{ article.title }}</h3>
+            <span class="status-badge status-review">En Revisión</span>
+          </div>
+
+          <div class="article-info">
+            <p class="article-date">
+              <strong>Creado:</strong> {{ article.createdAt | date : 'dd/MM/yyyy HH:mm' }}
+            </p>
+            <p class="article-author"><strong>Autor ID:</strong> {{ article.author.idUser }}</p>
+          </div>
+
+          <div class="article-content-preview">
+            <p>{{ article.content.substring(0, 150) }}...</p>
+          </div>
+
+          <div class="article-actions">
+            <button class="btn btn-secondary" (click)="viewArticle(article.idArticle)">
+              Ver Completo
+            </button>
+            <button class="btn btn-success" (click)="openApprovalModal(article, 'APPROVED')">
+              Aprobar
+            </button>
+            <button class="btn btn-danger" (click)="openApprovalModal(article, 'REJECTED')">
+              Rechazar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Aprobación/Rechazo -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        {{ approvalAction === 'APPROVED' ? 'Aprobar Artículo' : 'Rechazar Artículo' }}
+      </h2>
+      <button class="modal-close" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-article-title"><strong>Artículo:</strong> {{ selectedArticle?.title }}</p>
+
+      <div class="form-group">
+        <label for="comments">
+          Comentarios
+          {{ approvalAction === 'REJECTED' ? '(obligatorio para rechazos)' : '(opcional)' }}:
+        </label>
+        <textarea
+          id="comments"
+          [(ngModel)]="comments"
+          rows="4"
+          placeholder="Escribe tus comentarios aquí..."
+          class="form-control"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+      <button
+        class="btn"
+        [ngClass]="approvalAction === 'APPROVED' ? 'btn-success' : 'btn-danger'"
+        (click)="submitApproval()"
+        [disabled]="approvalAction === 'REJECTED' && !comments"
+      >
+        {{ approvalAction === 'APPROVED' ? 'Confirmar Aprobación' : 'Confirmar Rechazo' }}
+      </button>
     </div>
   </div>
 </div>

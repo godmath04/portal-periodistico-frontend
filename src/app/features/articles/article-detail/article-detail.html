@@ -56,6 +56,45 @@
         <div class="article-body">
           <p>{{ article.content }}</p>
         </div>
+        <!-- Historial de Aprobaciones -->
+        <div class="approval-history-section">
+          <h2>Historial de Aprobaciones</h2>
+
+          <!-- Loading historial -->
+          <div *ngIf="loadingHistory" class="loading-history">
+            <p>Cargando historial...</p>
+          </div>
+
+          <!-- Sin historial -->
+          <div *ngIf="!loadingHistory && approvalHistory.length === 0" class="no-history">
+            <p>Este artículo aún no tiene aprobaciones registradas.</p>
+          </div>
+
+          <!-- Lista de aprobaciones -->
+          <div *ngIf="!loadingHistory && approvalHistory.length > 0" class="approval-list">
+            <div *ngFor="let approval of approvalHistory; let last = last" class="approval-item">
+              <div class="approval-header">
+                <div class="approval-role-info">
+                  <h3 class="approval-role">{{ approval.roleName }}</h3>
+                  <span class="approval-weight">Peso: {{ approval.approvalWeight }}%</span>
+                </div>
+                <span
+                  class="approval-status-badge"
+                  [ngClass]="getApprovalStatusClass(approval.status)"
+                >
+                  {{ getApprovalStatusText(approval.status) }}
+                </span>
+              </div>
+              <div class="approval-details">
+                <p><strong>Usuario:</strong> {{ approval.approverUsername }}</p>
+              </div>
+              <div *ngIf="approval.message" class="approval-message">
+                <p>{{ approval.message }}</p>
+              </div>
+              <hr *ngIf="!last" class="approval-separator" />
+            </div>
+          </div>
+        </div>
 
         <!-- Acciones -->
         <div class="article-actions">

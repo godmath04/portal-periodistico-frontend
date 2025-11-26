@@ -1,3 +1,5 @@
+@import '../../../../styles/variables';
+
 .page-container {
   min-height: 100vh;
   display: flex;
@@ -166,4 +168,115 @@
       background-color: #7f8c8d;
     }
   }
+}
+// *** HISTORIAL DE APROBACIONES ***
+.approval-history-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #E0E0E0;
+
+  h2 {
+    color: $primary-dark;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+.loading-history,
+.no-history {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.approval-item {
+  padding: 1.5rem 0;
+
+  .approval-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+
+    .approval-role-info {
+      flex: 1;
+
+      .approval-role {
+        font-weight: 700; // 👈 NEGRITA
+        color: $primary-dark;
+        font-size: 1.2rem;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .approval-weight {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+    }
+
+    .approval-status-badge {
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      align-self: flex-start;
+
+      &.approval-approved {
+        background-color: #27ae60; // 👈 VERDE
+        color: white;
+      }
+
+      &.approval-rejected {
+        background-color: $danger; // 👈 ROJO
+        color: white;
+      }
+    }
+  }
+
+  .approval-details {
+    margin-bottom: 0.75rem;
+
+    p {
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+      color: #666;
+
+      strong {
+        color: $neutral-dark;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .approval-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: $neutral-light;
+    border-radius: $border-radius-sm;
+    border-left: 3px solid $primary-blue;
+    font-size: 0.95rem;
+    color: $neutral-dark;
+
+    p {
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+.approval-separator {
+  margin: 1.5rem 0 0 0;
+  border: none;
+  border-top: 1px solid #E0E0E0;
 }

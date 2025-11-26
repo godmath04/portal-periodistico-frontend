@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticleService } from '../../../core/services/article.service';
 import { Article } from '../../../core/models/article.model';
+import { ApprovalService } from '../../../core/services/approval.service';
+import { ApprovalResponse } from '../../../core/models/approval.model';
 
 @Component({
   selector: 'app-article-detail',
@@ -15,6 +17,8 @@ export class ArticleDetail implements OnInit {
   article: Article | null = null;
   loading: boolean = false;
   errorMessage: string = '';
+  approvalHistory: ApprovalResponse[] = [];
+  loadingHistory: boolean = false;
 
   statusMap: { [key: number]: { name: string; class: string } } = {
     1: { name: 'Borrador', class: 'status-draft' },
@@ -27,6 +31,7 @@ export class ArticleDetail implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private articleService: ArticleService,
+    private approvalService: ApprovalService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -34,6 +39,7 @@ export class ArticleDetail implements OnInit {
     const articleId = this.route.snapshot.paramMap.get('id');
     if (articleId) {
       this.loadArticle(+articleId);
+      this.loadApprovalHistory(+articleId);
     } else {
       this.errorMessage = 'ID de artículo no válido';
     }
@@ -60,6 +66,32 @@ export class ArticleDetail implements OnInit {
 
   getStatusInfo(statusId: number) {
     return this.statusMap[statusId] || { name: 'Desconocido', class: '' };
+  }
+
+  loadApprovalHistory(articleId: number): void {
+    this.loadingHistory = true;
+
+    this.approvalService.getApprovalHistory(articleId).subscribe({
+      next: (history) => {
+        console.log('Historial de aprobaciones:', history);
+        this.approvalHistory = history;
+        this.loadingHistory = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error cargando historial:', error);
+        this.loadingHistory = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  getApprovalStatusClass(status: string): string {
+    return status === 'APPROVED' ? 'approval-approved' : 'approval-rejected';
+  }
+
+  getApprovalStatusText(status: string): string {
+    return status === 'APPROVED' ? 'Aprobado' : 'Rechazado';
   }
 
   goBack(): void {
