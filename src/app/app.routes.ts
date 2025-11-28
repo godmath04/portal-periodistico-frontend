@@ -4,6 +4,7 @@ import { Dashboard } from './features/dashboard/dashboard';
 import { ArticleList } from './features/articles/article-list/article-list';
 import { ArticleCreate } from './features/articles/article-create/article-create';
 import { ArticleEdit } from './features/articles/article-edit/article-edit';
+import { SuggestionsComponent } from './features/suggestions/suggestions';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -40,6 +41,11 @@ export const routes: Routes = [
     path: 'articles/detail/:id',
     loadComponent: () =>
       import('./features/articles/article-detail/article-detail').then((m) => m.ArticleDetail),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'suggestions',
+    component: SuggestionsComponent,
     canActivate: [authGuard],
   },
   {
