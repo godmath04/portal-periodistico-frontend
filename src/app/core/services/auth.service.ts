@@ -108,4 +108,21 @@ export class AuthService {
     const decoded = this.decodeToken(token);
     return decoded?.roles || [];
   }
+
+  /**
+   * Obtiene la información completa del usuario actual desde el token
+   */
+  getCurrentUser(): { userId: number; username: string; roles: { roleName: string }[] } | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const decoded = this.decodeToken(token);
+    if (!decoded) return null;
+
+    return {
+      userId: decoded.userId,
+      username: decoded.sub,
+      roles: (decoded.roles || []).map((role: string) => ({ roleName: role })),
+    };
+  }
 }
