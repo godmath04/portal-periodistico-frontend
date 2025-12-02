@@ -5,17 +5,27 @@ import { ArticleList } from './features/articles/article-list/article-list';
 import { ArticleCreate } from './features/articles/article-create/article-create';
 import { ArticleEdit } from './features/articles/article-edit/article-edit';
 import { SuggestionsComponent } from './features/suggestions/suggestions';
+import { PublicArticleList } from './features/public/public-article-list/public-article-list';
+import { PublicArticleDetail } from './features/public/public-article-detail/public-article-detail';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/public/articles',
     pathMatch: 'full',
   },
   {
     path: 'login',
     component: Login,
+  },
+  {
+    path: 'public/articles',
+    component: PublicArticleList,
+  },
+  {
+    path: 'public/articles/:id',
+    component: PublicArticleDetail,
   },
   {
     path: 'dashboard',
