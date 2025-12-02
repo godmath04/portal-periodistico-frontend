@@ -69,7 +69,14 @@ export class AuthService {
   private decodeToken(token: string): any {
     try {
       const payload = token.split('.')[1];
-      return JSON.parse(atob(payload));
+      // Decodificar base64 y manejar caracteres UTF-8 correctamente
+      const jsonPayload = decodeURIComponent(
+        atob(payload)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
     } catch (error) {
       console.error('Error decodificando token:', error);
       return null;
