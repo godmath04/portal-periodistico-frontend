@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticleService } from '../../../core/services/article.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Article } from '../../../core/models/article.model';
 import { ApprovalService } from '../../../core/services/approval.service';
 import { ApprovalResponse } from '../../../core/models/approval.model';
@@ -20,6 +21,9 @@ export class ArticleDetail implements OnInit {
   approvalHistory: ApprovalResponse[] = [];
   loadingHistory: boolean = false;
 
+  // Role checking
+  isReporter: boolean = false;
+
   statusMap: { [key: number]: { name: string; class: string } } = {
     1: { name: 'Borrador', class: 'status-draft' },
     2: { name: 'Publicado', class: 'status-published' },
@@ -32,16 +36,27 @@ export class ArticleDetail implements OnInit {
     private router: Router,
     private articleService: ArticleService,
     private approvalService: ApprovalService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.checkUserRole();
+
     const articleId = this.route.snapshot.paramMap.get('id');
     if (articleId) {
       this.loadArticle(+articleId);
       this.loadApprovalHistory(+articleId);
     } else {
       this.errorMessage = 'ID de artículo no válido';
+    }
+  }
+
+  checkUserRole(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.roles && currentUser.roles.length > 0) {
+      const userRole = currentUser.roles[0].roleName;
+      this.isReporter = userRole === 'Reportero';
     }
   }
 

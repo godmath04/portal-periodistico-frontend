@@ -10,7 +10,9 @@
     <aside class="sidebar">
       <nav class="sidebar-nav">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">Dashboard</a>
-        <a routerLink="/articles" routerLinkActive="active" class="nav-item">Mis Artículos</a>
+        <a *ngIf="isReporter" routerLink="/articles" routerLinkActive="active" class="nav-item">
+          Mis Artículos
+        </a>
       </nav>
     </aside>
 
