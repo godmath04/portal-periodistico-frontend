@@ -177,6 +177,19 @@
     padding-top: $spacing-sm;
     border-top: 1px solid #e0e0e0;
     flex-wrap: wrap;
+    align-items: center;
+
+    .reviewed-badge {
+      background-color: rgba($success, 0.15);
+      color: darken($success, 15%);
+      padding: $spacing-xs $spacing-md;
+      border-radius: $border-radius-sm;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
   }
 }
 

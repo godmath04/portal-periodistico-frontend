@@ -129,12 +129,21 @@
               <button class="btn btn-secondary" (click)="viewArticle(article.idArticle)">
                 Ver Completo
               </button>
-              <button class="btn btn-success" (click)="openApprovalModal(article, 'APPROVED')">
-                Aprobar
-              </button>
-              <button class="btn btn-danger" (click)="openApprovalModal(article, 'REJECTED')">
-                Rechazar
-              </button>
+
+              <!-- Mostrar botones solo si el rol del usuario NO ha revisado el artículo -->
+              <ng-container *ngIf="!hasUserRoleReviewedArticle(article.idArticle)">
+                <button class="btn btn-success" (click)="openApprovalModal(article, 'APPROVED')">
+                  Aprobar
+                </button>
+                <button class="btn btn-danger" (click)="openApprovalModal(article, 'REJECTED')">
+                  Rechazar
+                </button>
+              </ng-container>
+
+              <!-- Mostrar mensaje si ya revisó -->
+              <span *ngIf="hasUserRoleReviewedArticle(article.idArticle)" class="reviewed-badge">
+                ✓ Ya revisado
+              </span>
             </div>
           </div>
         </div>
