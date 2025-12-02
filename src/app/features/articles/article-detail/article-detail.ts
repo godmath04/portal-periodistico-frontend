@@ -97,4 +97,52 @@ export class ArticleDetail implements OnInit {
   goBack(): void {
     this.router.navigate(['/articles']);
   }
+
+  editArticle(articleId: number): void {
+    this.router.navigate(['/articles/edit', articleId]);
+  }
+
+  deleteArticle(articleId: number): void {
+    if (confirm('¿Estás seguro de eliminar este artículo? Esta acción no se puede deshacer.')) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.articleService.deleteArticle(articleId).subscribe({
+        next: () => {
+          console.log('Artículo eliminado exitosamente');
+          this.router.navigate(['/articles']);
+        },
+        error: (error) => {
+          console.error('Error al eliminar artículo:', error);
+          this.errorMessage = error.error || 'Error al eliminar el artículo';
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    }
+  }
+
+  submitForReview(articleId: number): void {
+    const confirmMessage = this.article?.status.idArticleStatus === 4
+      ? '¿Estás seguro de reenviar este artículo a revisión?'
+      : '¿Estás seguro de enviar este artículo a revisión?';
+
+    if (confirm(confirmMessage)) {
+      this.loading = true;
+      this.errorMessage = '';
+
+      this.articleService.sendArticleToReview(articleId).subscribe({
+        next: (updatedArticle) => {
+          console.log('Artículo enviado a revisión:', updatedArticle);
+          this.loadArticle(articleId);
+        },
+        error: (error) => {
+          console.error('Error al enviar a revisión:', error);
+          this.errorMessage = error.error || 'Error al enviar el artículo a revisión';
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    }
+  }
 }

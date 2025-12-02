@@ -99,6 +99,33 @@
         <!-- Acciones -->
         <div class="article-actions">
           <button class="btn btn-secondary" (click)="goBack()">← Volver</button>
+
+          <!-- Editar: solo Borrador u Observado -->
+          <button
+            class="btn btn-primary"
+            (click)="editArticle(article.idArticle)"
+            *ngIf="article.status.idArticleStatus === 1 || article.status.idArticleStatus === 4"
+          >
+            Editar
+          </button>
+
+          <!-- Eliminar: solo Borrador u Observado -->
+          <button
+            class="btn btn-danger"
+            (click)="deleteArticle(article.idArticle)"
+            *ngIf="article.status.idArticleStatus === 1 || article.status.idArticleStatus === 4"
+          >
+            Eliminar
+          </button>
+
+          <!-- Enviar a revisión: Borrador (siempre) u Observado (solo si fue editado) -->
+          <button
+            class="btn btn-success"
+            (click)="submitForReview(article.idArticle)"
+            *ngIf="article.status.idArticleStatus === 1 || (article.status.idArticleStatus === 4 && article.updatedAt)"
+          >
+            {{ article.status.idArticleStatus === 4 ? 'Reenviar a Revisión' : 'Enviar a Revisión' }}
+          </button>
         </div>
       </div>
     </div>
