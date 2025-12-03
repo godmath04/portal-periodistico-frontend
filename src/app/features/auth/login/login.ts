@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,11 +19,17 @@ export class Login {
   };
 
   errorMessage: string = '';
+  showInactiveModal: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onLogin(): void {
     this.errorMessage = '';
+    this.showInactiveModal = false;
 
     // Validación básica
     if (!this.credentials.username || !this.credentials.password) {
@@ -40,8 +46,38 @@ export class Login {
       },
       error: (error) => {
         console.error('Error en login:', error);
-        this.errorMessage = 'Usuario o contraseña incorrectos';
+        console.log('error.error:', error.error);
+        console.log('error.error?.message:', error.error?.message);
+        console.log('error.status:', error.status);
+
+        let errorMsg = '';
+        if (error.error && typeof error.error === 'object' && error.error.message) {
+          errorMsg = error.error.message;
+        } else if (typeof error.error === 'string') {
+          errorMsg = error.error;
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+
+        console.log('Extracted errorMsg:', errorMsg);
+
+        if (
+          errorMsg.toLowerCase().includes('inactiv') ||
+          errorMsg.toLowerCase().includes('desactiv')
+        ) {
+          console.log('Showing inactive modal');
+          this.showInactiveModal = true;
+          this.cdr.detectChanges();
+        } else {
+          console.log('Showing generic error');
+          this.errorMessage = 'Usuario o contraseña incorrectos';
+          this.cdr.detectChanges();
+        }
       },
     });
+  }
+
+  closeInactiveModal(): void {
+    this.showInactiveModal = false;
   }
 }

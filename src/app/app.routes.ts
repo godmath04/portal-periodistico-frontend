@@ -7,6 +7,7 @@ import { ArticleEdit } from './features/articles/article-edit/article-edit';
 import { SuggestionsComponent } from './features/suggestions/suggestions';
 import { PublicArticleList } from './features/public/public-article-list/public-article-list';
 import { PublicArticleDetail } from './features/public/public-article-detail/public-article-detail';
+import { UserList } from './features/admin/user-list/user-list';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -56,6 +57,11 @@ export const routes: Routes = [
   {
     path: 'suggestions',
     component: SuggestionsComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'admin/users',
+    component: UserList,
     canActivate: [authGuard],
   },
   {

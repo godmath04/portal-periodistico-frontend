@@ -26,6 +26,7 @@ export class Dashboard implements OnInit {
   userRole: string = '';
   isReporter: boolean = false;
   isApprover: boolean = false;
+  isAdmin: boolean = false;
 
   // Para rastrear qué artículos ya han sido revisados por el rol del usuario
   articleReviewedByRole: Map<number, boolean> = new Map();
@@ -59,9 +60,11 @@ export class Dashboard implements OnInit {
 
       this.isReporter = this.userRole === 'Reportero';
       this.isApprover = ['Editor', 'Revisor Legal', 'Jefe de Redacción'].includes(this.userRole);
+      this.isAdmin = this.userRole === 'Administrador';
 
       console.log('Is Reporter:', this.isReporter);
       console.log('Is Approver:', this.isApprover);
+      console.log('Is Admin:', this.isAdmin);
     }
   }
 

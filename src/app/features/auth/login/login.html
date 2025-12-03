@@ -36,3 +36,28 @@
     </form>
   </div>
 </div>
+
+<!-- Modal for Inactive Account -->
+<div *ngIf="showInactiveModal" class="modal-overlay" (click)="closeInactiveModal()">
+  <div class="modal-content inactive-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon">
+      <span class="icon-warning">⚠️</span>
+    </div>
+
+    <div class="modal-body">
+      <h2>Cuenta Inactiva</h2>
+      <p>
+        Tu cuenta ha sido desactivada por un administrador. No puedes iniciar sesión en este
+        momento.
+      </p>
+      <p class="contact-info">
+        Por favor, contacta al administrador del sistema para más información sobre la
+        reactivación de tu cuenta.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="closeInactiveModal()">Entendido</button>
+    </div>
+  </div>
+</div>
