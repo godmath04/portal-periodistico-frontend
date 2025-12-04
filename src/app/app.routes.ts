@@ -8,6 +8,7 @@ import { SuggestionsComponent } from './features/suggestions/suggestions';
 import { PublicArticleList } from './features/public/public-article-list/public-article-list';
 import { PublicArticleDetail } from './features/public/public-article-detail/public-article-detail';
 import { UserList } from './features/admin/user-list/user-list';
+import { PromptConfigComponent } from './features/admin/prompt-config/prompt-config';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -62,6 +63,11 @@ export const routes: Routes = [
   {
     path: 'admin/users',
     component: UserList,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'admin/prompt-config',
+    component: PromptConfigComponent,
     canActivate: [authGuard],
   },
   {

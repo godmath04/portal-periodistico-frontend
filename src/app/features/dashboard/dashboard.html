@@ -24,6 +24,14 @@
         <a *ngIf="isAdmin" routerLink="/admin/users" routerLinkActive="active" class="nav-item">
           Gestión de Usuarios
         </a>
+        <a
+          *ngIf="isAdmin"
+          routerLink="/admin/prompt-config"
+          routerLinkActive="active"
+          class="nav-item"
+        >
+          Configuración de Sugerencias
+        </a>
       </nav>
     </aside>
 
