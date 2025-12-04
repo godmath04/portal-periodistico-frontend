@@ -18,6 +18,7 @@
           Dashboard
         </a>
         <a routerLink="/articles" routerLinkActive="active" class="nav-item"> Mis Artículos </a>
+        <a routerLink="/suggestions" routerLinkActive="active" class="nav-item">Sugerencias</a>
       </nav>
     </aside>
 
@@ -86,13 +87,13 @@
               Eliminar
             </button>
 
-            <!-- Enviar a revisión: solo Borrador -->
+            <!-- Enviar a revisión: Borrador (siempre) u Observado (solo si fue editado) -->
             <button
               class="btn btn-success"
               (click)="submitForReview(article.idArticle)"
-              *ngIf="article.status.idArticleStatus === 1"
+              *ngIf="article.status.idArticleStatus === 1 || (article.status.idArticleStatus === 4 && article.updatedAt)"
             >
-              Enviar a Revisión
+              {{ article.status.idArticleStatus === 4 ? 'Reenviar a Revisión' : 'Enviar a Revisión' }}
             </button>
           </div>
         </div>

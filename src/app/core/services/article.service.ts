@@ -76,4 +76,12 @@ export class ArticleService {
   getPendingArticles(): Observable<Article[]> {
     return this.http.get<Article[]>(`${this.apiUrl}/pending`);
   }
+
+  /**
+   * Obtiene los artículos del usuario autenticado actual
+   * Usa el endpoint de autor con el ID del usuario logueado
+   */
+  getMyArticles(authorId: number): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/author/${authorId}`);
+  }
 }

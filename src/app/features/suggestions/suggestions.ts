@@ -1,12 +1,13 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SuggestionService } from '../../core/services/suggestion.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-suggestions',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './suggestions.html',
   styleUrls: ['./suggestions.scss'],
 })
@@ -15,7 +16,12 @@ export class SuggestionsComponent {
   loading = false;
   error = '';
 
-  constructor(private suggestionService: SuggestionService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private suggestionService: SuggestionService,
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   getSuggestions(): void {
     this.loading = true;
@@ -27,17 +33,12 @@ export class SuggestionsComponent {
       next: (response) => {
         console.log('Raw response:', response);
         try {
-          // Limpiar la respuesta de posibles caracteres markdown
           let cleanResponse = response.trim();
-
-          // Remover bloques de código markdown si existen
           cleanResponse = cleanResponse.replace(/```json\n?/g, '');
           cleanResponse = cleanResponse.replace(/```\n?/g, '');
           cleanResponse = cleanResponse.trim();
 
           console.log('Clean response:', cleanResponse);
-
-          // Parsear el JSON
           this.suggestions = JSON.parse(cleanResponse);
           console.log('Parsed suggestions:', this.suggestions);
         } catch (e) {
@@ -47,13 +48,13 @@ export class SuggestionsComponent {
         }
 
         this.loading = false;
-        this.cdr.detectChanges(); // Forzar detección de cambios
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Error al obtener sugerencias. Verifica que el servicio esté corriendo.';
         console.error('Error:', err);
         this.loading = false;
-        this.cdr.detectChanges(); // Forzar detección de cambios
+        this.cdr.detectChanges();
       },
     });
   }
@@ -62,5 +63,10 @@ export class SuggestionsComponent {
     navigator.clipboard.writeText(text).then(() => {
       alert('Título copiado al portapapeles');
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

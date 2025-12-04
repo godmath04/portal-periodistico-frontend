@@ -81,3 +81,79 @@
     margin-top: $spacing-sm;
   }
 }
+
+// Modal styles for inactive account
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content.inactive-modal {
+  background: white;
+  border-radius: $border-radius;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+
+  .modal-icon {
+    text-align: center;
+    padding: $spacing-lg $spacing-lg 0;
+
+    .icon-warning {
+      font-size: 64px;
+    }
+  }
+
+  .modal-body {
+    padding: $spacing-lg;
+    text-align: center;
+
+    h2 {
+      color: $danger;
+      margin: 0 0 $spacing-md 0;
+      font-size: 24px;
+    }
+
+    p {
+      color: $neutral-dark;
+      margin-bottom: $spacing-md;
+      line-height: 1.6;
+    }
+
+    .contact-info {
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  .modal-footer {
+    padding: 0 $spacing-lg $spacing-lg;
+    text-align: center;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

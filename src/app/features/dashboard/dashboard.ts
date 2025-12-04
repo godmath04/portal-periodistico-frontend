@@ -6,7 +6,7 @@ import { ArticleService } from '../../core/services/article.service';
 import { ApprovalService } from '../../core/services/approval.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Article } from '../../core/models/article.model';
-import { ApprovalRequest } from '../../core/models/approval.model';
+import { ApprovalRequest, ApprovalResponse } from '../../core/models/approval.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,9 +17,19 @@ import { ApprovalRequest } from '../../core/models/approval.model';
 })
 export class Dashboard implements OnInit {
   pendingArticles: Article[] = [];
+  myArticles: Article[] = [];
   loading: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
+
+  // Información del usuario
+  userRole: string = '';
+  isReporter: boolean = false;
+  isApprover: boolean = false;
+  isAdmin: boolean = false;
+
+  // Para rastrear qué artículos ya han sido revisados por el rol del usuario
+  articleReviewedByRole: Map<number, boolean> = new Map();
 
   // Para el modal de aprobación/rechazo
   showModal: boolean = false;
@@ -36,7 +46,62 @@ export class Dashboard implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadPendingArticles();
+    this.checkUserRole();
+    this.loadDashboardContent();
+  }
+
+  checkUserRole(): void {
+    const currentUser = this.authService.getCurrentUser();
+    console.log('Current user:', currentUser);
+
+    if (currentUser && currentUser.roles && currentUser.roles.length > 0) {
+      this.userRole = currentUser.roles[0].roleName;
+      console.log('User role:', this.userRole);
+
+      this.isReporter = this.userRole === 'Reportero';
+      this.isApprover = ['Editor', 'Revisor Legal', 'Jefe de Redacción'].includes(this.userRole);
+      this.isAdmin = this.userRole === 'Administrador';
+
+      console.log('Is Reporter:', this.isReporter);
+      console.log('Is Approver:', this.isApprover);
+      console.log('Is Admin:', this.isAdmin);
+    }
+  }
+
+  loadDashboardContent(): void {
+    if (this.isReporter) {
+      this.loadMyArticles();
+    } else if (this.isApprover) {
+      this.loadPendingArticles();
+    }
+  }
+
+  loadMyArticles(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.errorMessage = 'Usuario no autenticado';
+      this.loading = false;
+      return;
+    }
+
+    this.articleService.getMyArticles(currentUser.userId).subscribe({
+      next: (articles) => {
+        console.log('Mis artículos:', articles);
+        this.myArticles = articles;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error cargando mis artículos:', error);
+        this.errorMessage = 'Error al cargar tus artículos';
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   loadPendingArticles(): void {
@@ -48,8 +113,9 @@ export class Dashboard implements OnInit {
       next: (articles) => {
         console.log('Artículos pendientes:', articles);
         this.pendingArticles = articles;
-        this.loading = false;
-        this.cdr.detectChanges();
+
+        // Cargar el historial de aprobaciones para cada artículo
+        this.checkApprovalHistory();
       },
       error: (error) => {
         console.error('Error cargando artículos pendientes:', error);
@@ -57,6 +123,45 @@ export class Dashboard implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
       },
+    });
+  }
+
+  checkApprovalHistory(): void {
+    if (this.pendingArticles.length === 0) {
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    let completedRequests = 0;
+    const totalRequests = this.pendingArticles.length;
+
+    this.pendingArticles.forEach(article => {
+      this.approvalService.getApprovalHistory(article.idArticle).subscribe({
+        next: (history: ApprovalResponse[]) => {
+          // Verificar si el rol del usuario actual ya revisó este artículo
+          const hasReviewed = history.some(approval =>
+            approval.roleName === this.userRole
+          );
+          this.articleReviewedByRole.set(article.idArticle, hasReviewed);
+
+          completedRequests++;
+          if (completedRequests === totalRequests) {
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (error) => {
+          console.error('Error cargando historial de artículo:', article.idArticle, error);
+          this.articleReviewedByRole.set(article.idArticle, false);
+
+          completedRequests++;
+          if (completedRequests === totalRequests) {
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
+        }
+      });
     });
   }
 
@@ -90,7 +195,7 @@ export class Dashboard implements OnInit {
         console.log('Aprobación procesada:', response);
         this.successMessage = response.message || 'Aprobación procesada exitosamente';
         this.closeModal();
-        this.loadPendingArticles(); // Recargar la lista
+        this.loadPendingArticles();
       },
       error: (error) => {
         console.error('Error procesando aprobación:', error);
@@ -103,6 +208,14 @@ export class Dashboard implements OnInit {
 
   viewArticle(articleId: number): void {
     this.router.navigate(['/articles/detail', articleId]);
+  }
+
+  editArticle(articleId: number): void {
+    this.router.navigate(['/articles/edit', articleId]);
+  }
+
+  hasUserRoleReviewedArticle(articleId: number): boolean {
+    return this.articleReviewedByRole.get(articleId) || false;
   }
 
   logout(): void {

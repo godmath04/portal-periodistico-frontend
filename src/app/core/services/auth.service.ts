@@ -69,7 +69,14 @@ export class AuthService {
   private decodeToken(token: string): any {
     try {
       const payload = token.split('.')[1];
-      return JSON.parse(atob(payload));
+      // Decodificar base64 y manejar caracteres UTF-8 correctamente
+      const jsonPayload = decodeURIComponent(
+        atob(payload)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
     } catch (error) {
       console.error('Error decodificando token:', error);
       return null;
@@ -107,5 +114,29 @@ export class AuthService {
 
     const decoded = this.decodeToken(token);
     return decoded?.roles || [];
+  }
+
+  /**
+   * Obtiene la información completa del usuario actual desde el token
+   */
+  getCurrentUser(): { userId: number; username: string; roles: { roleName: string }[] } | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const decoded = this.decodeToken(token);
+    if (!decoded) return null;
+
+    return {
+      userId: decoded.userId,
+      username: decoded.sub,
+      roles: (decoded.roles || []).map((role: string) => ({ roleName: role })),
+    };
+  }
+
+  /**
+   * Obtiene información básica de un usuario por ID (endpoint público)
+   */
+  getUserBasicInfo(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${userId}`);
   }
 }
