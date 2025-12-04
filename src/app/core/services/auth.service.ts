@@ -132,4 +132,11 @@ export class AuthService {
       roles: (decoded.roles || []).map((role: string) => ({ roleName: role })),
     };
   }
+
+  /**
+   * Obtiene información básica de un usuario por ID (endpoint público)
+   */
+  getUserBasicInfo(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/${userId}`);
+  }
 }
